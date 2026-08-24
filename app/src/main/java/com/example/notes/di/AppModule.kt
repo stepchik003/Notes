@@ -23,16 +23,13 @@ val appModule = module {
     }
     single { get<AppDatabase>().noteDao() }
 
-    // Repository
     single<NoteRepository> { NoteRepositoryImpl(get()) }
 
-    // UseCases
     factory { GetNotesUseCase(get()) }
     factory { GetNoteByIdUseCase(get()) }
     factory { SaveNoteUseCase(get()) }
     factory { DeleteNoteUseCase(get()) }
 
-    // ViewModels
     viewModel { NotesListViewModel(get(), get()) }
-    viewModel { (noteId: Long?) -> NoteEditViewModel(noteId, get(), get()) }
+    viewModel { (noteId: Long?) -> NoteEditViewModel(noteId, get(), get(), get()) }
 }

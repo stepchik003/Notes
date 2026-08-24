@@ -1,7 +1,6 @@
 package com.example.notes.presentation.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,13 +8,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButtonDefaults.Icon
-import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -80,12 +79,9 @@ fun NoteCard(
 
             if (note.tags.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    note.tags.forEach { tag ->
-                        SuggestionChip(
-                            onClick = { },
-                            label = { Text("#$tag", style = MaterialTheme.typography.labelSmall) }
-                        )
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    items(note.tags) { tag ->
+                        TagChip(tag = tag)
                     }
                 }
             }

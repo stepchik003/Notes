@@ -6,7 +6,7 @@ data class Note(
     val content: String,
     val createdAt: Long = System.currentTimeMillis(),
     val updatedAt: Long = System.currentTimeMillis(),
-    val tags: List<String> = emptyList(),
-    val imageUri: String? = null,
+    val tags: List<Tag> = emptyList(),
+    val images: List<String> = emptyList(),
     val isDraft: Boolean = false
 )
