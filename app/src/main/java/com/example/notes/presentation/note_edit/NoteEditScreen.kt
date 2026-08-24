@@ -1,11 +1,13 @@
 package com.example.notes.presentation.note_edit
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -53,11 +55,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.notes.R
 import com.example.notes.presentation.components.AddTagDialog
+import com.example.notes.presentation.components.DateTimePickerDialog
 import com.example.notes.presentation.components.FullScreenImageGalleryDialog
 import com.example.notes.presentation.components.TagChip
 import com.example.notes.utils.getOrSaveImage
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,6 +75,7 @@ fun NoteEditScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var isAddTagDialogVisible by remember { mutableStateOf(false) }
     var selectedImageIndex by remember { mutableStateOf<Int?>(null) }
+    var isDateTimePickerVisible by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
@@ -109,6 +116,24 @@ fun NoteEditScreen(
         )
     }
 
+    if (isDateTimePickerVisible) {
+        DateTimePickerDialog(
+            onDismiss = { isDateTimePickerVisible = false },
+            onTimeSelected = { timestamp ->
+                viewModel.onEvent(NoteEditEvent.ReminderChanged(timestamp))
+
+                val formattedDate = SimpleDateFormat("d MMM в HH:mm", Locale.getDefault())
+                    .format(Date(timestamp))
+
+                Toast.makeText(
+                    context,
+                    "Напоминание установлено на $formattedDate",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        )
+    }
+
 
     Scaffold(
         topBar = {
@@ -124,6 +149,36 @@ fun NoteEditScreen(
                     }
                 },
                 actions = {
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .combinedClickable(
+                                onClick = {
+                                    isDateTimePickerVisible = true
+                                },
+                                onLongClick = {
+                                    if (state.reminderTimestamp != null) {
+                                        viewModel.onEvent(NoteEditEvent.ReminderChanged(null))
+                                        Toast.makeText(
+                                            context,
+                                            "Напоминание отменено",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
+                            )
+                            .padding(12.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.alarm),
+                            contentDescription = "Напоминание",
+                            tint = if (state.reminderTimestamp != null)
+                                MaterialTheme.colorScheme.primary
+                            else
+                                MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                     IconButton(onClick = { viewModel.onEvent(NoteEditEvent.SaveClicked) }) {
                         Icon(
                             painter = painterResource(R.drawable.check),

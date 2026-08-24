@@ -2,6 +2,7 @@ package com.example.notes.di
 
 import androidx.room.Room
 import com.example.notes.data.local.db.AppDatabase
+import com.example.notes.data.receiver.ReminderScheduler
 import com.example.notes.data.repository.NoteRepositoryImpl
 import com.example.notes.domain.repository.NoteRepository
 import com.example.notes.domain.usecase.DeleteNoteUseCase
@@ -31,5 +32,6 @@ val appModule = module {
     factory { DeleteNoteUseCase(get()) }
 
     viewModel { NotesListViewModel(get(), get()) }
-    viewModel { (noteId: Long?) -> NoteEditViewModel(noteId, get(), get(), get()) }
+    viewModel { (noteId: Long?) -> NoteEditViewModel(noteId, get(), get(), get(), get()) }
+    single { ReminderScheduler(get()) }
 }

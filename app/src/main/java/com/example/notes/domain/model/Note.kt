@@ -8,5 +8,6 @@ data class Note(
     val updatedAt: Long = System.currentTimeMillis(),
     val tags: List<Tag> = emptyList(),
     val images: List<String> = emptyList(),
-    val isDraft: Boolean = false
+    val isDraft: Boolean = false,
+    val reminderTimestamp: Long? = null
 )

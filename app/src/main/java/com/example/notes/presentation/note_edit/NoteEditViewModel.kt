@@ -2,6 +2,7 @@ package com.example.notes.presentation.note_edit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.notes.data.receiver.ReminderScheduler
 import com.example.notes.domain.model.Note
 import com.example.notes.domain.usecase.GetNoteByIdUseCase
 import com.example.notes.domain.usecase.GetNotesUseCase
@@ -14,10 +15,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class NoteEditViewModel(
-    private val noteId: Long?,
+    noteId: Long?,
     private val getNoteByIdUseCase: GetNoteByIdUseCase,
     private val saveNoteUseCase: SaveNoteUseCase,
-    private val getNotesUseCase: GetNotesUseCase
+    private val getNotesUseCase: GetNotesUseCase,
+    private val reminderScheduler: ReminderScheduler
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(NoteEditState())
@@ -58,6 +60,7 @@ class NoteEditViewModel(
                         tags = note.tags,
                         isDraft = note.isDraft,
                         images = note.images,
+                        reminderTimestamp = note.reminderTimestamp,
                         isLoading = false
                     )
                 }
@@ -111,6 +114,9 @@ class NoteEditViewModel(
                     _uiState.update { it.copy(isShouldNavigateBack = true) }
                 }
             }
+            is NoteEditEvent.ReminderChanged -> {
+                _uiState.update { it.copy(reminderTimestamp = event.timestamp) }
+            }
         }
     }
 
@@ -141,9 +147,20 @@ class NoteEditViewModel(
                     isDraft = isDraft,
                     tags = currentState.tags,
                     images = currentState.images,
-                    updatedAt = System.currentTimeMillis()
+                    updatedAt = System.currentTimeMillis(),
+                    reminderTimestamp = currentState.reminderTimestamp
                 )
                 saveNoteUseCase(note)
+                if (currentState.reminderTimestamp != null && currentState.reminderTimestamp > System.currentTimeMillis()) {
+                    reminderScheduler.schedule(
+                        noteId = note.id,
+                        title = note.title,
+                        content = note.content,
+                        timeInMillis = currentState.reminderTimestamp
+                    )
+                } else if (currentState.reminderTimestamp == null) {
+                    reminderScheduler.cancel(note.id)
+                }
             }
             _uiState.update { it.copy(isShouldNavigateBack = true) }
         }

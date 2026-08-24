@@ -11,5 +11,6 @@ data class NoteEditState(
     val images: List<String> = emptyList(),
     val isDraft: Boolean = true,
     val isLoading: Boolean = false,
-    val isShouldNavigateBack: Boolean = false
+    val isShouldNavigateBack: Boolean = false,
+    val reminderTimestamp: Long? = null
 )

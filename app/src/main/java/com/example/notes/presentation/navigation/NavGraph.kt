@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.example.notes.presentation.note_edit.NoteEditScreen
 import com.example.notes.presentation.notes_list.NotesListScreen
 
@@ -35,6 +36,9 @@ fun SetupNavGraph() {
                     type = NavType.LongType
                     defaultValue = -1L
                 }
+            ),
+            deepLinks = listOf(
+                navDeepLink { uriPattern = "app://notes/edit/{noteId}" }
             )
         ) { backStackEntry ->
             val noteId = backStackEntry.arguments?.getLong("noteId")

@@ -11,7 +11,8 @@ fun NoteEntity.toDomain() = Note(
     updatedAt = updatedAt,
     tags = tags,
     images = images,
-    isDraft = isDraft
+    isDraft = isDraft,
+    reminderTimestamp = reminderTimestamp
 )
 
 fun Note.toEntity() = NoteEntity(
@@ -22,5 +23,6 @@ fun Note.toEntity() = NoteEntity(
     updatedAt = updatedAt,
     tags = tags,
     images = images,
-    isDraft = isDraft
+    isDraft = isDraft,
+    reminderTimestamp = reminderTimestamp
 )

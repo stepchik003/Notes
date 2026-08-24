@@ -11,4 +11,5 @@ sealed interface NoteEditEvent {
     data class ImageRemoved(val uri: String) : NoteEditEvent
     data object SaveClicked : NoteEditEvent
     data object BackClicked : NoteEditEvent
+    data class ReminderChanged(val timestamp: Long?) : NoteEditEvent
 }

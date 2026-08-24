@@ -13,5 +13,6 @@ data class NoteEntity(
     val updatedAt: Long,
     val tags: List<Tag>,
     val images: List<String> = emptyList(),
-    val isDraft: Boolean = false
+    val isDraft: Boolean = false,
+    val reminderTimestamp: Long? = null
 )
