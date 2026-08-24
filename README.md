@@ -46,7 +46,7 @@ Android-приложение для создания, редактировани
 
 1. **Клонирование репозитория:**
    ```bash
-   git clone [https://github.com/stepchik003/Notes.git](https://github.com/stepchik003/Notes.git)
+   git clone https://github.com/stepchik003/Notes.git
    ```
 2. Запустите Android Studio, выберите **File -> Open** и укажите корневую папку проекта.
 3. Дождитесь завершения процесса Gradle Sync.
