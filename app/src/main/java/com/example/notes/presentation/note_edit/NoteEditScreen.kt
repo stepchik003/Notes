@@ -1,5 +1,7 @@
 package com.example.notes.presentation.note_edit
 
+import android.Manifest
+import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -59,6 +61,7 @@ import com.example.notes.presentation.components.DateTimePickerDialog
 import com.example.notes.presentation.components.FullScreenImageGalleryDialog
 import com.example.notes.presentation.components.TagChip
 import com.example.notes.utils.getOrSaveImage
+import com.example.notes.utils.hasNotificationPermission
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 import java.text.SimpleDateFormat
@@ -77,6 +80,32 @@ fun NoteEditScreen(
     var selectedImageIndex by remember { mutableStateOf<Int?>(null) }
     var isDateTimePickerVisible by remember { mutableStateOf(false) }
     val context = LocalContext.current
+
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            isDateTimePickerVisible = true
+        } else {
+            Toast.makeText(
+                context,
+                "Без разрешения на уведомления напоминания не смогут приходить",
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    fun checkNotificationPermissionAndShowPicker() {
+        if (context.hasNotificationPermission()) {
+            isDateTimePickerVisible = true
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            } else {
+                isDateTimePickerVisible = true
+            }
+        }
+    }
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia()
@@ -154,7 +183,7 @@ fun NoteEditScreen(
                             .clip(CircleShape)
                             .combinedClickable(
                                 onClick = {
-                                    isDateTimePickerVisible = true
+                                    checkNotificationPermissionAndShowPicker()
                                 },
                                 onLongClick = {
                                     if (state.reminderTimestamp != null) {
